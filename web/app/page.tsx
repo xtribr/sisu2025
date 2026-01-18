@@ -50,6 +50,7 @@ interface CoursePreview {
   // Separate data for each year
   data2024?: YearCutScore;
   data2025?: YearCutScore;
+  data2026?: YearCutScore;
 }
 
 export default function Home() {
@@ -196,8 +197,9 @@ export default function Home() {
         }
 
         // Find best cut score data
-        // Priority: 2025 with data > 2024 with data > latest available
+        // Priority: 2026 with data > 2025 with data > 2024 with data > latest available
         let latestCutScore = null;
+        let cutScore2026 = null;
         let cutScore2025 = null;
         let cutScore2024 = null;
 
@@ -208,6 +210,7 @@ export default function Home() {
             );
             if (ampla) {
               const scoreData = { ...ampla, year: yearData.year };
+              if (yearData.year === 2026) cutScore2026 = scoreData;
               if (yearData.year === 2025) cutScore2025 = scoreData;
               if (yearData.year === 2024) cutScore2024 = scoreData;
               if (!latestCutScore || yearData.year > latestCutScore.year) {
@@ -222,8 +225,30 @@ export default function Home() {
         let cutScoreYear = new Date().getFullYear();
         let cutScoreType = 'Em breve';
 
-        // Check 2025 first
-        if (cutScore2025) {
+        // Check 2026 first (highest priority)
+        if (cutScore2026) {
+          const has2026Data = cutScore2026.cut_score > 0 ||
+            (cutScore2026.partial_scores?.some((p: any) => p.score > 0));
+
+          if (has2026Data) {
+            cutScoreYear = 2026;
+            if (cutScore2026.cut_score > 0) {
+              cutScoreValue = cutScore2026.cut_score;
+              cutScoreType = 'Corte Final';
+            } else if (cutScore2026.partial_scores?.length > 0) {
+              const partials = cutScore2026.partial_scores
+                .filter((p: any) => p.score > 0)
+                .sort((a: any, b: any) => b.day - a.day);
+              if (partials.length > 0) {
+                cutScoreValue = partials[0].score;
+                cutScoreType = `Corte ${partials[0].day}`;
+              }
+            }
+          }
+        }
+
+        // If no 2026 data, check 2025
+        if (cutScoreValue === 0 && cutScore2025) {
           const has2025Data = cutScore2025.cut_score > 0 ||
             (cutScore2025.partial_scores?.some((p: any) => p.score > 0));
 
@@ -320,6 +345,32 @@ export default function Home() {
           };
         }
 
+        // Prepare 2026 data
+        let data2026: YearCutScore | undefined = undefined;
+        if (cutScore2026) {
+          const partials2026 = (cutScore2026.partial_scores || [])
+            .map((p: any) => ({ day: parseInt(p.day) || p.day, score: p.score || 0 }))
+            .filter((p: any) => p.score > 0);
+
+          let type2026 = 'Em breve';
+          let score2026 = cutScore2026.cut_score || 0;
+
+          if (score2026 > 0) {
+            type2026 = 'Corte Final';
+          } else if (partials2026.length > 0) {
+            const lastPartial = partials2026.sort((a: any, b: any) => b.day - a.day)[0];
+            score2026 = lastPartial.score;
+            type2026 = `Corte ${lastPartial.day}`;
+          }
+
+          data2026 = {
+            year: 2026,
+            cut_score: score2026,
+            cut_score_type: type2026,
+            partial_scores: partials2026
+          };
+        }
+
         setCoursePreview({
           code: courseData?.code || selectedCourse.code,
           name: courseData?.name || selectedCourse.name,
@@ -333,7 +384,8 @@ export default function Home() {
           highest_weight: highestWeight,
           weights: weightsForCalc,
           data2024,
-          data2025
+          data2025,
+          data2026
         });
         setLoadingFilters(prev => ({ ...prev, details: false }));
       });
@@ -609,20 +661,36 @@ export default function Home() {
             )}
           </div>
 
-          {/* Daily Cut Scores - 2026 listening mode (always blank until data arrives) */}
+          {/* Daily Cut Scores - 2026 (shows real data when available, otherwise listening mode) */}
           {coursePreview && (
             <div className={styles.dailyCutsCard}>
               <h3>📈 Cortes Diários 2026</h3>
 
-              <div className={styles.dailyCutsList}>
-                {[1, 2, 3, 4, 5].map((day) => (
-                  <div key={day} className={`${styles.dailyCutRow} ${styles.dailyCutRowPending}`}>
-                    <span className={styles.dailyCutDay}>DIA {day}</span>
-                    <span className={styles.dailyCutScorePending}>---</span>
-                  </div>
-                ))}
-                <div className={styles.dailyCutsNote}>⏳ Aguardando SISU 2026</div>
-              </div>
+              {coursePreview.data2026?.partial_scores?.length ? (
+                /* Show real 2026 data */
+                <div className={styles.dailyCutsList}>
+                  {coursePreview.data2026.partial_scores
+                    .sort((a, b) => a.day - b.day)
+                    .map((p) => (
+                      <div key={p.day} className={styles.dailyCutRow}>
+                        <span className={styles.dailyCutDay}>DIA {p.day}</span>
+                        <span className={styles.dailyCutScore}>{p.score.toFixed(2).replace('.', ',')}</span>
+                      </div>
+                    ))}
+                  <div className={styles.dailyCutsNote}>🔴 SISU 2026 ao vivo</div>
+                </div>
+              ) : (
+                /* Listening mode - waiting for data */
+                <div className={styles.dailyCutsList}>
+                  {[1, 2, 3, 4, 5].map((day) => (
+                    <div key={day} className={`${styles.dailyCutRow} ${styles.dailyCutRowPending}`}>
+                      <span className={styles.dailyCutDay}>DIA {day}</span>
+                      <span className={styles.dailyCutScorePending}>---</span>
+                    </div>
+                  ))}
+                  <div className={styles.dailyCutsNote}>⏳ Aguardando SISU 2026</div>
+                </div>
+              )}
             </div>
           )}
         </aside>

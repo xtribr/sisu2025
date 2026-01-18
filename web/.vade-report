@@ -1,0 +1,33 @@
+## Vercel Web Analytics Implementation
+
+Successfully installed and configured Vercel Web Analytics for the Next.js project.
+
+### What was implemented:
+
+1. **Installed @vercel/analytics package**
+   - Added `@vercel/analytics` (v1.6.1) to project dependencies
+   - Updated package-lock.json with new dependency and its transitive dependencies
+
+2. **Added Analytics to App Router layout**
+   - Imported `Analytics` from `@vercel/analytics/next` in `web/app/layout.tsx`
+   - Added `<Analytics />` component inside the `<body>` tag after `<ScoreProvider>{children}</ScoreProvider>`
+   - This ensures analytics tracking is enabled for the entire application
+
+### Files modified:
+- `web/package.json` - Added @vercel/analytics dependency
+- `web/package-lock.json` - Updated with new dependencies
+- `web/app/layout.tsx` - Added Analytics import and component
+
+### Implementation details:
+- The project uses the App Router pattern (confirmed by presence of `app/` directory with `layout.tsx`)
+- Analytics component is correctly placed inside the body tag for proper initialization
+- Build completes successfully with no errors
+- All changes maintain existing code structure and preserve the ScoreProvider context
+
+### Verification:
+✓ Package installed successfully
+✓ Build completed successfully (all routes compiled)
+✓ No TypeScript errors introduced
+✓ Layout component properly updated with Analytics component
+
+The implementation follows Next.js best practices for integrating Vercel Web Analytics with the App Router architecture.

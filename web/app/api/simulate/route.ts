@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Get latest cut scores (most recent year)
-        const years = [...new Set(result.data.cut_scores.map(s => s.year))].sort((a, b) => b - a)
+        const years = Array.from(new Set(result.data.cut_scores.map(s => s.year))).sort((a, b) => b - a)
         if (years.length > 0) {
           cutScores = result.data.cut_scores
             .filter(s => s.year === years[0])
@@ -143,13 +143,13 @@ export async function POST(request: NextRequest) {
 
     // Calculate weighted average
     const totalWeight = weights.redacao + weights.linguagens + weights.matematica +
-                       weights.humanas + weights.natureza
+      weights.humanas + weights.natureza
 
     const weightedSum = (scores.redacao * weights.redacao) +
-                       (scores.linguagens * weights.linguagens) +
-                       (scores.matematica * weights.matematica) +
-                       (scores.humanas * weights.humanas) +
-                       (scores.natureza * weights.natureza)
+      (scores.linguagens * weights.linguagens) +
+      (scores.matematica * weights.matematica) +
+      (scores.humanas * weights.humanas) +
+      (scores.natureza * weights.natureza)
 
     const mediaPonderada = Math.round((weightedSum / totalWeight) * 100) / 100
 

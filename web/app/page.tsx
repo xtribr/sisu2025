@@ -988,8 +988,8 @@ export default function Home() {
           para assegurar que estejam sempre corretas e atualizadas.
         </p>
         <div className={styles.contacts}>
-          <a href="https://instagram.com/xandaotri" target="_blank" rel="noopener noreferrer">
-            📸 @xandaotri
+          <a href="https://instagram.com/xandaoxtri" target="_blank" rel="noopener noreferrer">
+            📸 @xandaoxtri
           </a>
           <span className={styles.contactDivider}>•</span>
           <a href="mailto:contato@xtri.online">

@@ -928,7 +928,7 @@ export default function Home() {
                       ⚖️ Comparar
                     </button>
                     <button className={styles.shareButton} onClick={() => setShowShare(true)}>
-                      📱 Flex
+                      📱 Share
                     </button>
                   </div>
 

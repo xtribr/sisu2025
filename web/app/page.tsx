@@ -6,7 +6,7 @@ import { useModality, MODALITY_OPTIONS, matchModality, getModalityCode } from '.
 import CourseDetailView from '../components/CourseDetail/CourseDetailView';
 import ScoreEvolutionChart from '../components/CourseDetail/ScoreEvolutionChart';
 import ProbabilityGauge from '../components/CourseDetail/ProbabilityGauge';
-import CourseComparator from '../components/CourseDetail/CourseComparator';
+import ApprovalRadarModal from '../components/CourseDetail/ApprovalRadarModal';
 import ShareModal from '../components/CourseDetail/ShareModal';
 import styles from './page.module.css';
 
@@ -66,7 +66,7 @@ export default function Home() {
   const [courseData, setCourseData] = useState<CourseData | null>(null);
   const [loading, setLoading] = useState(false);
   const [showScoreInput, setShowScoreInput] = useState(false);
-  const [showComparator, setShowComparator] = useState(false);
+  const [showRadar, setShowRadar] = useState(false);
   const [showShare, setShowShare] = useState(false);
 
   // Filter states
@@ -941,8 +941,8 @@ export default function Home() {
                   </div>
 
                   <div className={styles.actionButtons}>
-                    <button className={styles.compareButton} onClick={() => setShowComparator(true)}>
-                      ⚖️ Comparar
+                    <button className={styles.compareButton} onClick={() => setShowRadar(true)}>
+                      🔍 Radar de Aprovação
                     </button>
                     <button className={styles.shareButton} onClick={() => setShowShare(true)}>
                       📱 Share
@@ -1020,11 +1020,10 @@ export default function Home() {
       {/* Logic Components */}
       {
         coursePreview && (
-          <CourseComparator
-            baseCourse={coursePreview}
-            userScore={userAverage}
-            isOpen={showComparator}
-            onClose={() => setShowComparator(false)}
+          <ApprovalRadarModal
+            isOpen={showRadar}
+            onClose={() => setShowRadar(false)}
+            baseCourseName={coursePreview.name} // Pass the name to search for matches
           />
         )
       }

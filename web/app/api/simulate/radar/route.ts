@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 
                 if (match) {
                     finalCutScore = match;
-                    finalYear = year;
+                    finalYear = year as number;
                     break; // Found latest valid data
                 }
             }

@@ -852,7 +852,23 @@ export default function Home() {
                     </div>
                   )}
                   <div className={styles.previewRow}>
-                    <span>⏰ {coursePreview.schedule}</span>
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.25rem',
+                      padding: '0.25rem 0.5rem',
+                      borderRadius: '0.25rem',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      backgroundColor: coursePreview.schedule === 'Integral' ? '#dbeafe' :
+                        coursePreview.schedule === 'Noturno' ? '#f3e8ff' :
+                          '#fef3c7',
+                      color: coursePreview.schedule === 'Integral' ? '#1e40af' :
+                        coursePreview.schedule === 'Noturno' ? '#6b21a8' :
+                          '#92400e'
+                    }}>
+                      ⏰ {coursePreview.schedule}
+                    </span>
                   </div>
                   {coursePreview.highest_weight && (
                     <div className={styles.previewRow}>

@@ -14,6 +14,12 @@ export const MODALITY_OPTIONS = [
     { code: 'L10', name: 'Escola Pública + Renda + PPI + PcD', shortName: 'L10 (EP+Renda+PPI+PcD)' },
     { code: 'L13', name: 'Escola Pública + PcD (Independente de Renda)', shortName: 'L13 (EP+PcD)' },
     { code: 'L14', name: 'Escola Pública + PPI + PcD (Independente de Renda)', shortName: 'L14 (EP+PPI+PcD)' },
+    { code: 'quilombola', name: 'Quilombolas', shortName: 'Quilombolas' },
+    { code: 'indigenas', name: 'Indígenas', shortName: 'Indígenas' },
+    { code: 'ciganos', name: 'Ciganos', shortName: 'Ciganos' },
+    { code: 'trans', name: 'Pessoas Trans', shortName: 'Trans' },
+    { code: 'deficiencia', name: 'Pessoas com Deficiência (Geral)', shortName: 'PcD' },
+    { code: 'rural', name: 'Educação do Campo', shortName: 'Rural' },
 ];
 
 // Mapping from modality name patterns to codes
@@ -51,6 +57,21 @@ export function getModalityCode(modalityName: string): string {
 
     // Quilombola
     if (name.includes('quilombola')) return 'quilombola';
+
+    // Indígenas
+    if (name.includes('indígena') || name.includes('indigena')) return 'indigenas';
+
+    // Ciganos
+    if (name.includes('cigano')) return 'ciganos';
+
+    // Trans / Travestis
+    if (name.includes('trans') || name.includes('travesti')) return 'trans';
+
+    // Deficiência (Generico/Outros) - if not matched by specific L-codes
+    if (name.includes('deficiência')) return 'deficiencia';
+
+    // Rural / Campo
+    if (name.includes('campo') || name.includes('rural')) return 'rural';
 
     return 'other';
 }

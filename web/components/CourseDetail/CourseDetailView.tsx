@@ -263,7 +263,12 @@ export default function CourseDetailView({ course }: CourseDetailViewProps) {
                                                     <button
                                                         onClick={() => {
                                                             const code = getModalityCode(mod.modality_name);
-                                                            if (code !== 'other') setSelectedModality(code);
+                                                            if (code !== 'other') {
+                                                                setSelectedModality(code);
+                                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                            } else {
+                                                                alert('Esta modalidade específica ainda não está mapeada no filtro global, mas a nota acima é a correta para ela.');
+                                                            }
                                                         }}
                                                         style={{
                                                             fontSize: '0.8rem',

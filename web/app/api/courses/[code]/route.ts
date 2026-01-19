@@ -26,13 +26,8 @@ export async function GET(
   }
 
   try {
-    // Try to get by ID first (as frontend sends ID)
-    let result = await supabase.getFullCourseDataById(code)
-
-    // If not found by ID, try by Code (fallback)
-    if (result.error || !result.data) {
-      result = await supabase.getFullCourseData(code)
-    }
+    // Get by SISU Code (the URL param is the SISU code, not internal ID)
+    const result = await supabase.getFullCourseData(code)
 
     if (result.error || !result.data) {
       return NextResponse.json(

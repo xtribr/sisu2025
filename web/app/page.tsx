@@ -31,6 +31,7 @@ interface Course {
   code: number;
   name: string;
   degree: string;
+  schedule: string;
 }
 
 interface YearCutScore {
@@ -814,7 +815,7 @@ export default function Home() {
                 >
                   <option value="">{loadingFilters.courses ? 'Carregando...' : 'Selecione'}</option>
                   {options.courses.map(c => (
-                    <option key={c.id} value={c.id}>{c.name} - {c.degree}</option>
+                    <option key={c.id} value={c.id}>{c.name} - {c.degree} - {c.schedule}</option>
                   ))}
                 </select>
               </div>

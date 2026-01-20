@@ -769,8 +769,22 @@
 
 .blinkingDot {
     display: inline-block;
-    animation: pulse 2s infinite;
+    animation: blink 1.5s ease-in-out infinite;
     margin-right: 4px;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
 
 .dailyCutsEmpty {

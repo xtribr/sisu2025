@@ -1,4 +1,4 @@
-# XTRI SISU 2026 - Frontend Dockerfile (Fixed)
+# XTRI SISU 2026 - Frontend Dockerfile (Production)
 FROM node:20-alpine AS base
 
 # Install dependencies only when needed
@@ -6,11 +6,11 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
+# Install dependencies
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Rebuild the source code only when needed
+# Build stage
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -29,7 +29,7 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 # Build the application
 RUN npm run build
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 WORKDIR /app
 
@@ -38,13 +38,18 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/package.json ./package.json
+
+# Copy the standalone build
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+
+# Install only production dependencies
+RUN npm ci --only=production
 
 EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Run as root for now to avoid permission issues
 CMD ["node", "server.js"]

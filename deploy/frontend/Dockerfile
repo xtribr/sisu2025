@@ -29,8 +29,10 @@ ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
 # Build the application
 RUN npm run build
 
-# Production image
-FROM base AS runner
+# Production image - use alpine directly
+FROM alpine:3.19 AS runner
+RUN apk add --no-cache nodejs npm
+
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -46,6 +48,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# Override the default entrypoint
-ENTRYPOINT []
 CMD ["node", "server.js"]

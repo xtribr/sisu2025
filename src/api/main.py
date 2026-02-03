@@ -248,7 +248,8 @@ async def get_course_students(
 @app.get("/api/filters")
 async def get_filters(
     state: Optional[str] = Query(None, description="Filter cities by state"),
-    city: Optional[str] = Query(None, description="Filter universities by city")
+    city: Optional[str] = Query(None, description="Filter universities by city"),
+    university: Optional[str] = Query(None, description="Filter courses by university")
 ):
     """Get available filter options"""
     if not supabase:
@@ -258,11 +259,30 @@ async def get_filters(
         # Get all courses to extract unique values
         all_courses = supabase._get(
             "courses",
-            params={"select": "state,city,university", "limit": 10000}
+            params={"select": "id,code,name,state,city,university", "limit": 10000}
         )
         
         # Extract unique states (always return all)
         unique_states = sorted(list(set([c.get("state") for c in all_courses if c.get("state")])))
+        
+        # If university is provided, return courses for that university
+        if university and city and state:
+            # Get courses for the selected university, city and state
+            university_courses = [
+                {
+                    "id": c.get("id"),
+                    "code": c.get("code"),
+                    "name": c.get("name")
+                }
+                for c in all_courses 
+                if c.get("university") == university and c.get("city") == city and c.get("state") == state.upper()
+            ]
+            return {
+                "states": unique_states,
+                "cities": [city],
+                "universities": [university],
+                "courses": university_courses
+            }
         
         # If city is provided, filter universities by state and city
         if city and state:
@@ -274,7 +294,8 @@ async def get_filters(
             return {
                 "states": unique_states,
                 "cities": [city],
-                "universities": city_universities
+                "universities": city_universities,
+                "courses": []
             }
         
         # If state is provided, filter cities by that state
@@ -287,7 +308,8 @@ async def get_filters(
             return {
                 "states": unique_states,
                 "cities": state_cities,
-                "universities": []
+                "universities": [],
+                "courses": []
             }
         
         # Return all cities with state suffix for initial load
@@ -300,7 +322,8 @@ async def get_filters(
         return {
             "states": unique_states,
             "cities": unique_cities[:100],
-            "universities": unique_universities[:100]
+            "universities": unique_universities[:100],
+            "courses": []
         }
     
     except Exception as e:

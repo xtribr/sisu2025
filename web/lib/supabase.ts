@@ -3,7 +3,7 @@
  * Uses service_role key for backend operations only
  */
 
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://rqzxcturezryjbwsptld.supabase.co'
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://sisymqzxvuktdcbsbpbp.supabase.co'
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY || ''
 
 // Log environment status for debugging

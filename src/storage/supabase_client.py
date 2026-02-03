@@ -11,7 +11,7 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_SUPABASE_URL = "https://rqzxcturezryjbwsptld.supabase.co"
+DEFAULT_SUPABASE_URL = "https://sisymqzxvuktdcbsbpbp.supabase.co"
 
 
 @dataclass

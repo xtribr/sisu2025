@@ -592,10 +592,7 @@ export default function Home() {
             <img src="/xtri-logo.png" alt="XTRI" className={styles.logoImage} />
             <h1 className={styles.logo}>XTRI SISU</h1>
           </div>
-          <div className={styles.headerBadge}>
-            <span className={styles.liveDot} />
-            TEMPO REAL
-          </div>
+          {/* Badge removido - sistema em modo de dados históricos */}
         </div>
       </header>
 

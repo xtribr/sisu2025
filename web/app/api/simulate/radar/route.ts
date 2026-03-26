@@ -15,12 +15,35 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
     return R * c;
 }
 
+// Map numeric DB modality codes to string codes used by getModalityCode
+const NUMERIC_CODE_MAP: Record<number, string> = {
+    41: 'ampla',
+    686: 'L1',
+    682: 'L2',
+    687: 'L5',
+    683: 'L6',
+    685: 'L9',
+    // L10, L13, L14 can be added as needed
+    689: 'quilombola',
+};
+
+function normalizeModalityCode(code: unknown): string {
+    if (code === undefined || code === null || code === '') return 'ampla';
+    if (typeof code === 'string') return code;
+    if (typeof code === 'number') return NUMERIC_CODE_MAP[code] ?? 'ampla';
+    return 'ampla';
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { grades, courseName, modalityCode, referenceCourseId } = body;
+        const { grades, courseName, modalityCode: rawModalityCode, referenceCourseId } = body;
 
-        console.log('Radar Simulation Request:', { courseName, modalityCode, referenceCourseId });
+        // Normalize modalityCode: default to 'ampla' when missing,
+        // and convert numeric DB codes to string codes
+        const modalityCode = normalizeModalityCode(rawModalityCode);
+
+        console.log('Radar Simulation Request:', { courseName, modalityCode, rawModalityCode, referenceCourseId });
 
         if (!grades || !courseName) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });

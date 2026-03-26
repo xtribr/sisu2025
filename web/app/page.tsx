@@ -599,7 +599,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <h2 className={styles.heroTitle}>
-          Monitoramento do SISU 2026
+          Monitoramento do SISU {new Date().getFullYear()}
           <span className={styles.heroHighlight}> em Tempo Real</span>
         </h2>
         <p className={styles.heroSubtitle}>
@@ -735,40 +735,44 @@ export default function Home() {
             />
           )}
 
-          {/* Daily Cut Scores - 2026 (shows real data when available, otherwise listening mode) */}
-          {coursePreview && (
-            <div className={styles.dailyCutsCard}>
-              <h3>📈 Cortes Diários 2026</h3>
+          {/* Daily Cut Scores - Current Edition */}
+          {coursePreview && (() => {
+            const currentYear = new Date().getFullYear();
+            const currentData = currentYear === 2026 ? coursePreview.data2026
+              : currentYear === 2025 ? coursePreview.data2025
+              : coursePreview.data2024;
+            return (
+              <div className={styles.dailyCutsCard}>
+                <h3>📈 Cortes Diários {currentYear}</h3>
 
-              {coursePreview.data2026?.partial_scores?.length ? (
-                /* Show real 2026 data */
-                <div className={styles.dailyCutsList}>
-                  {coursePreview.data2026.partial_scores
-                    .sort((a, b) => a.day - b.day)
-                    .map((p) => (
-                      <div key={p.day} className={styles.dailyCutRow}>
-                        <span className={styles.dailyCutDay}>DIA {p.day}</span>
-                        <span className={styles.dailyCutScore}>{p.score.toFixed(2).replace('.', ',')}</span>
+                {currentData?.partial_scores?.length ? (
+                  <div className={styles.dailyCutsList}>
+                    {currentData.partial_scores
+                      .sort((a, b) => a.day - b.day)
+                      .map((p) => (
+                        <div key={p.day} className={styles.dailyCutRow}>
+                          <span className={styles.dailyCutDay}>DIA {p.day}</span>
+                          <span className={styles.dailyCutScore}>{p.score.toFixed(2).replace('.', ',')}</span>
+                        </div>
+                      ))}
+                    <div className={styles.dailyCutsNote}>
+                      <span className={styles.blinkingDot}>🔴</span> SISU {currentYear} ao vivo
+                    </div>
+                  </div>
+                ) : (
+                  <div className={styles.dailyCutsList}>
+                    {[1, 2, 3, 4, 5].map((day) => (
+                      <div key={day} className={`${styles.dailyCutRow} ${styles.dailyCutRowPending}`}>
+                        <span className={styles.dailyCutDay}>DIA {day}</span>
+                        <span className={styles.dailyCutScorePending}>---</span>
                       </div>
                     ))}
-                  <div className={styles.dailyCutsNote}>
-                    <span className={styles.blinkingDot}>🔴</span> SISU 2026 ao vivo
+                    <div className={styles.dailyCutsNote}>⏳ Aguardando SISU {currentYear}</div>
                   </div>
-                </div>
-              ) : (
-                /* Listening mode - waiting for data */
-                <div className={styles.dailyCutsList}>
-                  {[1, 2, 3, 4, 5].map((day) => (
-                    <div key={day} className={`${styles.dailyCutRow} ${styles.dailyCutRowPending}`}>
-                      <span className={styles.dailyCutDay}>DIA {day}</span>
-                      <span className={styles.dailyCutScorePending}>---</span>
-                    </div>
-                  ))}
-                  <div className={styles.dailyCutsNote}>⏳ Aguardando SISU 2026</div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            );
+          })()}
         </aside>
 
         {/* Right Column - Course Search */}
@@ -884,45 +888,51 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* Year Comparison Section */}
+                {/* Year Comparison Section - Always show current edition */}
                 <div className={styles.yearComparison}>
-                  {/* Latest/Best Available */}
-                  <div className={`${styles.yearCard} ${styles.yearCardHighlight}`}>
-                    <div className={styles.yearHeader}>
-                      <span className={styles.yearBadge2025}>2025</span>
-                      <span className={styles.yearLabel}>
-                        {coursePreview.data2025?.cut_score_type || 'Em breve'}
-                      </span>
-                    </div>
-                    {coursePreview.data2025 && coursePreview.data2025.cut_score > 0 ? (
-                      <>
-                        <div className={styles.yearScore}>
-                          <span className={styles.yearScoreLabel}>
-                            {coursePreview.data2025.cut_score_type}
-                          </span>
-                          <span className={styles.yearScoreValue2025}>
-                            {coursePreview.data2025.cut_score.toFixed(2).replace('.', ',')}
+                  {(() => {
+                    const currentYear = new Date().getFullYear();
+                    const currentData = currentYear === 2026 ? coursePreview.data2026
+                      : currentYear === 2025 ? coursePreview.data2025
+                      : coursePreview.data2024;
+                    return (
+                      <div className={`${styles.yearCard} ${styles.yearCardHighlight}`}>
+                        <div className={styles.yearHeader}>
+                          <span className={styles.yearBadge2025}>{currentYear}</span>
+                          <span className={styles.yearLabel}>
+                            {currentData?.cut_score_type || 'Em breve'}
                           </span>
                         </div>
-                        {coursePreview.data2025.partial_scores?.length > 0 && (
-                          <div className={styles.partialScoresPreview}>
-                            {coursePreview.data2025.partial_scores.map((p) => (
-                              <div key={p.day} className={styles.partialDay}>
-                                <span>Dia {p.day}</span>
-                                <strong>{p.score.toFixed(2).replace('.', ',')}</strong>
+                        {currentData && currentData.cut_score > 0 ? (
+                          <>
+                            <div className={styles.yearScore}>
+                              <span className={styles.yearScoreLabel}>
+                                {currentData.cut_score_type}
+                              </span>
+                              <span className={styles.yearScoreValue2025}>
+                                {currentData.cut_score.toFixed(2).replace('.', ',')}
+                              </span>
+                            </div>
+                            {currentData.partial_scores?.length > 0 && (
+                              <div className={styles.partialScoresPreview}>
+                                {currentData.partial_scores.map((p) => (
+                                  <div key={p.day} className={styles.partialDay}>
+                                    <span>Dia {p.day}</span>
+                                    <strong>{p.score.toFixed(2).replace('.', ',')}</strong>
+                                  </div>
+                                ))}
                               </div>
-                            ))}
+                            )}
+                          </>
+                        ) : (
+                          <div className={styles.yearPending}>
+                            <span>⏳</span>
+                            <span>Aguardando início do SISU</span>
                           </div>
                         )}
-                      </>
-                    ) : (
-                      <div className={styles.yearPending}>
-                        <span>⏳</span>
-                        <span>Aguardando início do SISU</span>
-                        <span className={styles.dateHint}>Inicia 19/01</span>
                       </div>
-                    )}
-                  </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Score Evolution Chart */}
@@ -1019,7 +1029,7 @@ export default function Home() {
             ✉️ contato@xtri.online
           </a>
         </div>
-        <p>© 2026 XTRI SISU - Monitoramento em Tempo Real</p>
+        <p>© {new Date().getFullYear()} XTRI SISU - Monitoramento em Tempo Real</p>
       </footer>
 
 
